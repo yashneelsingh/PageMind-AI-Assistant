@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "PageMind",
+  "version": "1.0.0",
+  "description": "An academic AI assistant to extract page context and answer questions.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "src/background/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content.ts"]
+    }
+  ],
+  "options_page": "options.html",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*"
+  ]
+}

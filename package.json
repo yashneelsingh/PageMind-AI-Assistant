@@ -1,0 +1,14 @@
+{
+  "name": "ai-research-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:server": "npm run dev --prefix server",
+    "dev:extension": "npm run dev --prefix extension",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:extension\"",
+    "install:all": "npm install && npm install --prefix server && npm install --prefix extension"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
