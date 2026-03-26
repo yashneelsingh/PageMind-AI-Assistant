@@ -7,7 +7,7 @@ import router from './routes/index';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Allows large page text payloads
@@ -22,6 +22,10 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use('/api', router);
 
-app.listen(PORT, () => {
-  console.log(`AI Engine Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`AI Engine Server running on http://0.0.0.0:${PORT}`);
+  });
+}
+
+export default app;
