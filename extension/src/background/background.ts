@@ -24,7 +24,7 @@ async function getServerUrl(): Promise<string> {
     chrome.storage.sync.get(['ai_research_settings'], (result) => {
       // Remove trailing slash if present
       const settings = result.ai_research_settings as { serverUrl?: string } | undefined;
-      const rawUrl = settings?.serverUrl || 'http://localhost:3000';
+      const rawUrl = settings?.serverUrl || 'https://page-mind-ai-assistant.vercel.app';
       resolve(rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl);
     });
   });

@@ -23,6 +23,6 @@
     "storage"
   ],
   "host_permissions": [
-    "http://localhost:3000/*"
+    "https://page-mind-ai-assistant.vercel.app/*"
   ]
 }

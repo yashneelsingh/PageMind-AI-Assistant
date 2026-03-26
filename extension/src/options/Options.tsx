@@ -7,7 +7,7 @@ interface Settings {
 }
 
 const DEFAULT_SETTINGS: Settings = {
-  serverUrl: 'http://localhost:3000',
+  serverUrl: 'https://page-mind-ai-assistant.vercel.app',
   geminiApiKey: '',
   theme: 'dark',
 };
@@ -74,7 +74,7 @@ export default function Options() {
             style={inputStyle}
             value={settings.serverUrl}
             onChange={(e) => setSettings(s => ({ ...s, serverUrl: e.target.value }))}
-            placeholder="http://localhost:3000"
+            placeholder="https://page-mind-ai-assistant.vercel.app"
           />
           <p style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>
             The URL where your Node.js backend is running.
