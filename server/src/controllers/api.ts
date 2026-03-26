@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { processAndStoreText, generateRAGAnswer, summarizePage, isUrlCached } from '../services/langchain';
-import { PDFParse } from 'pdf-parse';
+import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 
 export const extractPdf = async (req: Request, res: Response) => {
-  let parser: InstanceType<typeof PDFParse> | null = null;
   try {
     const { url, title } = req.body;
 
@@ -13,19 +12,25 @@ export const extractPdf = async (req: Request, res: Response) => {
 
     console.log(`[PDF] Parsing PDF from: ${url}`);
 
-    // pdf-parse v2: create parser with URL, it handles download internally
-    parser = new PDFParse({ url });
-    const result = await parser.getText();
-    const text = result.text?.trim();
+    // Fetch the PDF as a Blob
+    const fetchRes = await fetch(url);
+    if (!fetchRes.ok) throw new Error(`Failed to fetch PDF: ${fetchRes.statusText}`);
+    const blob = await fetchRes.blob();
+
+    // Use WebPDFLoader which is Serverless-compatible (no native canvas dependencies)
+    const loader = new WebPDFLoader(blob);
+    const docs = await loader.load();
+    
+    const text = docs.map(doc => doc.pageContent).join('\n').trim();
 
     if (!text || text.length < 10) {
       return res.status(400).json({ error: 'Could not extract text from PDF (may be scanned/image-only)' });
     }
 
-    const totalPages = result.total || 0;
+    const totalPages = docs.length || 0;
     console.log(`[PDF] Extracted ${text.length} chars, ${totalPages} pages`);
 
-    // Truncate to 200k chars for PDFs (larger than HTML because server has more memory)
+    // Truncate to 200k chars for PDFs
     const truncatedText = text.substring(0, 200000);
     const pageTitle = title || `PDF (${totalPages} pages)`;
 
@@ -37,8 +42,6 @@ export const extractPdf = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('[PDF] Error extracting PDF:', error);
     res.status(500).json({ error: 'Failed to extract PDF' });
-  } finally {
-    if (parser) await parser.destroy();
   }
 };
 
