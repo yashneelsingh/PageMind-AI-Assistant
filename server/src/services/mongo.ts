@@ -3,11 +3,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const uri = process.env.MONGO_URI || '';
-const client = new MongoClient(uri);
+let client: MongoClient | null = null;
 
 export async function getCollection() {
-  await client.connect();
+  if (!client) {
+    const uri = process.env.MONGO_URI;
+    if (!uri) throw new Error("MONGO_URI environment variable is missing!");
+    client = new MongoClient(uri);
+    await client.connect();
+  }
   const db = client.db('AIResearchDB');
   return db.collection('documents');
 }
